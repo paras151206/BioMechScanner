@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioMechScanner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --base: #111318;
+            --surface: #191D26;
+            --card: #1E2330;
+            --accent: #7AA3D4;
+            --text-main: #E8EDF5;
+            --text-muted: #9BA9C2;
+            --border: #2A3143;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--base);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Subtle radial background */
+        .bg-glow {
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(122, 163, 212, 0.05) 0%, rgba(17, 19, 24, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-glow-2 {
+            position: fixed;
+            bottom: -20%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(122, 163, 212, 0.04) 0%, rgba(17, 19, 24, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            padding: 20px 48px;
+            border-bottom: 1px solid var(--border);
+            background-color: rgba(25, 29, 38, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .logo svg {
+            width: 28px;
+            height: 28px;
+            color: var(--accent);
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 48px;
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 64px;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 24px;
+                gap: 32px;
+            }
+        }
+
+        /* Left Column */
+        .header-content h1 {
+            font-size: 48px;
+            font-weight: 600;
+            line-height: 1.1;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.03em;
+        }
+
+        .header-content p {
+            color: var(--text-muted);
+            font-size: 18px;
+            margin-bottom: 48px;
+            max-width: 90%;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .info-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            gap: 16px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .info-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background-color: var(--card);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .info-text h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .info-text p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Right Column (Interactive Panel) */
+        .interactive-panel {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .upload-zone {
+            background-color: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent);
+            background-color: rgba(122, 163, 212, 0.05);
+        }
+
+        .upload-icon {
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--base);
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            width: 100%;
+            box-shadow: 0 4px 14px rgba(122, 163, 212, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(122, 163, 212, 0.4);
+            background-color: #8bb0dc;
+        }
+
+        .btn-primary:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 4px 14px rgba(122, 163, 212, 0.2);
+        }
+
+        /* Result Area */
+        .result-area {
+            margin-top: 32px;
+            display: none;
+            border-top: 1px solid var(--border);
+            padding-top: 32px;
+        }
+
+        .image-display {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: var(--base);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .image-display img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .metadata-item {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .metadata-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .meta-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .telemetry-log {
+            margin-top: 24px;
+            background-color: var(--base);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'SF Mono', ui-monospace, monospace;
+            font-size: 12px;
+            color: var(--accent);
+            height: 80px;
+            overflow-y: auto;
+        }
+
+        .telemetry-log div {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+    <div class="bg-glow-2"></div>
+
+    <nav>
+        <div class="logo">
+            <!-- Custom BioMechScanner Logo -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            <span>BioMechScanner</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Left content (Info Cards filling space) -->
+        <div class="header-content">
+            <h1>Neural extraction &amp; visual parsing.</h1>
+            <p>Upload a visual matrix to decode its structural composition, biological entity status, and semantic metadata instantly.</p>
+            
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <div class="info-text">
+                        <h3>Entity Recognition</h3>
+                        <p>Identifies multi-modal subjects ranging from biological organisms to synthetic structures within milliseconds.</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </div>
+                    <div class="info-text">
+                        <h3>Material Composition</h3>
+                        <p>Analyzes the surface substrate matrix to predict whether the target is metallic, organic, or a complex composite.</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <div class="info-text">
+                        <h3>Color Matrix Reconstruction</h3>
+                        <p>Extracts internal hex colors and builds a segmented generative canvas mapping the exact physical topology.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right interactive panel -->
+        <div>
+            <div class="interactive-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Analysis Interface</span>
+                    <div class="status-badge">
+                        <div class="status-dot"></div>
+                        System Ready
+                    </div>
+                </div>
+
+                <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <p id="uploadText" style="margin: 0; color: var(--text-main); font-weight: 500;">Click to upload visual payload</p>
+                    <p style="margin: 8px 0 0 0; color: var(--text-muted); font-size: 13px;">Supports PNG, JPG, GIF</p>
+                    <input type="file" id="fileInput" style="display:none" accept="image/*">
+                </div>
+
+                <button class="btn-primary" onclick="analyzeImage()">Initialize Scan</button>
+
+                <!-- Telemetry -->
+                <div class="telemetry-log" id="telemetryBox">
+                    <div>> Boot sequence complete.</div>
+                    <div>> Awaiting visual matrix...</div>
+                </div>
+
+                <!-- Results -->
+                <div class="result-area" id="resultArea">
+                    <div class="image-display">
+                        <img id="decodedImage" style="display:none;" alt="Generated Framework">
+                    </div>
+
+                    <div class="metadata-grid">
+                        <div class="metadata-item">
+                            <span class="meta-label">Primary Entity</span>
+                            <div class="meta-value" id="predEntity"></div>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="meta-label">Material Class</span>
+                            <div class="meta-value" id="predComp"></div>
+                        </div>
+                        <div class="metadata-item full-width">
+                            <span class="meta-label">Structural Diagnostics</span>
+                            <div class="meta-value" id="predDetails" style="color: var(--text-muted); font-weight: 400; font-size: 14px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadText = document.getElementById('uploadText');
+        const telemetryBox = document.getElementById('telemetryBox');
+        const resultArea = document.getElementById('resultArea');
+
+        const logMsg = (msg, isError=false) => {
+            const color = isError ? '#ef4444' : 'var(--accent)';
+            telemetryBox.innerHTML += `<div style="color: ${color}">> ${msg}</div>`;
+            telemetryBox.scrollTop = telemetryBox.scrollHeight;
+        };
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                uploadText.innerHTML = `Payload staged: <span style="color: var(--accent)">${e.target.files[0].name}</span>`;
+                logMsg('Visual data cached. Ready for scan.');
+            }
+        });
+
+        const toTitleCase = (str) => {
+            if (!str) return '';
+            return str.replace(
+                /\w\S*/g,
+                function(txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                }
+            );
+        };
+
+        async function analyzeImage() {
+            const file = fileInput.files[0];
+            if (!file) { alert("Please select an image first."); return; }
+
+            logMsg('Initiating deep semantic parsing...');
+            resultArea.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await fetch("/decode-thought/", {
+                    method: "POST",
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    logMsg('Matrix decoded successfully. Projecting data...');
+                    
+                    const imgElement = document.getElementById('decodedImage');
+                    imgElement.src = result.image_data;
+                    imgElement.style.display = 'block';
+
+                    document.getElementById('predEntity').innerText = toTitleCase(result.prediction.entity);
+                    document.getElementById('predComp').innerText = result.prediction.composition;
+                    document.getElementById('predDetails').innerText = result.prediction.details;
+                    
+                    resultArea.style.display = 'block';
+                    logMsg('Telemetry vectors synced: OK.');
+                } else {
+                    logMsg('Error: ' + result.message, true);
+                }
+            } catch (error) {
+                logMsg('Connection critical failure. Node unavailable.', true);
+            }
+        }
+    </script>
+</body>
+</html>
