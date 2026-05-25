@@ -13,6 +13,13 @@ Instead of just labeling an image, the system executes real-time neural inferenc
 
 ---
 
+## Working
+<img width="1856" height="793" alt="image" src="https://github.com/user-attachments/assets/4cab1327-3e21-4845-9726-07023cae1aac" />
+<img width="1882" height="885" alt="image" src="https://github.com/user-attachments/assets/4c8d6d9d-9f8d-4251-a5c3-0b805a7c6a1d" />
+
+
+
+
 ## The Mathematical Spatial Re-Projection
 Unlike standard AI apps that just call an API and display text, **BioMechScanner** intercepts the image data matrix. It utilizes custom **OpenCV vector parsing** to calculate exact geometric contours, determines local pixel density, and feeds a clean matrix loop back to an isolated frontend coordinate pipeline to draw a raw digital canvas match of the original object live.
 
@@ -56,4 +63,4 @@ Unlike standard AI apps that just call an API and display text, **BioMechScanner
 
 **Hugging Face Space:** [Hugging Space](https://huggingface.co/paras1512)
 
-**Linkedin Profile:** [Linkedin](www.linkedin.com/in/paras-panchal-0b76a7320)
+**Linkedin Profile:** [Linkedin](https://www.linkedin.com/in/paras-panchal-0b76a7320)
